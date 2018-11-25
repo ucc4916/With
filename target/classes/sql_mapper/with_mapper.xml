@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//En" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="With">
+
+<!-- 
+크거나 같다와 같은 부등호 기호를 이용할 때는 CDATA로 쿼리문을 감싸줘야함
+![CDATA[쿼리문]]> 부등호 쓰려면
+ -->
+
+<!-- 기사 회원가입 -->
+<insert id="DriverJoin" parameterType="member">
+insert into member
+(ID, NAME, PASSWORD, GENDER, EMAIL, TEL,ADDRESS,PASSUSER,SIGNTYPE)
+values(#{Id},#{Name},#{Password},#{Gender},#{Email},#{Tel},#{Address},2,'emptys')
+</insert>
+
+<!-- 유저회원가입 -->
+<insert id="UserJoin" parameterType="member">
+insert into member
+(ID,NAME,PASSWORD,GENDER,EMAIL,TEL,ADDRESS,PASSUSER,SIGNTYPE)
+VALUES(#{Id},#{Name},#{Password},#{Gender},#{Email},#{Tel},#{Address},1,'user')
+</insert>
+
+<!-- 로그인 -->
+<select id="Login" parameterType="member" resultType="member">
+select * from member where ID=#{Id} and password=#{Password}
+</select>
+
+<!--Main  -->
+<select id="Main" parameterType="member" resultType="member">
+select * from member where ID=#{Id}
+</select>
+
+<update id="ExistingDriverInfoAlter" parameterType="member">
+UPDATE member SET email=#{Email},TEL=#{Tel},address=#{Address},certificate=#{Certificate},NAME=#{Name},SIGNTYPE='SUCCESS' WHERE id=#{Id}
+</update>
+
+<!-- 운전자 정보 변경 -->
+<update id="DriverUpdateLisence" parameterType="member">
+UPDATE member SET email=#{Email},TEL=#{Tel},address=#{Address},certificate=#{Certificate},NAME=#{Name},SIGNTYPE='request'  WHERE id=#{Id}
+</update>
+
+<!-- 유저정보 변경 -->
+<update id="UserUpdate" parameterType="member">
+UPDATE member SET email=#{Email},TEL=#{Tel},Address=#{Address},NAME=#{Name} WHERE id=#{Id}
+</update>
+
+<!-- 운전자 정보 변경 -->
+<update id="DriverUpdate" parameterType="member">
+UPDATE member SET email=#{Email},TEL=#{Tel},address=#{Address},certificate=#{Certificate},NAME=#{Name}  WHERE id=#{Id}
+</update>
+
+
+<!-- 아이디 중복확인 -->
+<select id="idOverlap" parameterType="member" resultType="member">
+SELECT * FROM MEMBER WHERE id=#{id}
+</select>
+
+
+<!-- 이메일 중복확인 -->
+<select id="EmailOverlap" parameterType="member" resultType="member">
+SELECT * FROM MEMBER WHERE email=#{email}
+</select>
+
+
+<!-- 아이디 찾기  -->
+<select id="FindId" parameterType="member" resultType="member">
+SELECT * FROM MEMBER WHERE NAME=#{Name} AND EMAIL=#{Email}
+</select>
+
+<!-- 이메일 전송 -->
+<select id="SelectFindId" parameterType="member" resultType="member">
+SELECT * FROM MEMBER WHERE NAME=#{Name} AND EMAIL=#{Email}
+</select>
+
+<!-- 핸드폰 전송 -->
+<select id="SelectFindPs" parameterType="member" resultType="member">
+SELECT * FROM MEMBER WHERE ID=#{Id}
+</select>
+
+<!-- 비밀번호 찾을 때 아읻 -->
+<select id="FindPsPro" parameterType="member" resultType="member">
+SELECT * FROM MEMBER WHERE ID=#{Id}
+</select>
+
+<!--  비밀번호 변경 -->
+<update id="ChangePsPro" parameterType="member">
+UPDATE member SET PASSWORD =#{Password} WHERE id=#{Id}
+</update>
+
+<!--  라이센스 업로드  -->
+<update id="LicenseUpload" parameterType="member">
+UPDATE member SET certificate=#{Certificate},SIGNTYPE='request' WHERE id=#{Id}
+</update>
+
+
+<!--  운영자가 보는  멤버 리스트 -->
+<select id= "MemberList" parameterType="member" resultType="member">
+SELECT * FROM MEMBER
+</select>
+
+<!--  운영자가 보는 멤버 디테일  -->
+<select id= "MemberDetail" parameterType="member" resultType="member">
+SELECT * FROM MEMBER WHERE ID= #{Id}
+</select>
+
+<!--  멤버 회원탈퇴 시키기 -->
+
+<delete id="MemberDel" parameterType="member">
+DELETE FROM MEMBER WHERE ID= #{Id}
+</delete>
+<!--  승인을 기다리는 드라이버 -->
+<select id="DriverList" parameterType="member" resultType="member">
+SELECT * FROM MEMBER WHERE SIGNTYPE='request'
+</select>
+<!--  운영자가 보는 드라이버 디테일 -->
+<select id="DriverDetail" parameterType="member" resultType="member">
+SELECT * FROM MEMBER WHERE ID = #{Id}
+</select>
+
+<!-- 운영자가 자격 승인함 -->
+<update id="DriverAuthorityApproval" parameterType="member">
+UPDATE MEMBER SET SIGNTYPE = 'SUCCESS' WHERE ID = #{Id}
+</update>
+
+<!-- max(RoomId) 찾기 -->
+<select id="RoomId" resultType="String">
+select max(ROOMID) AS ROOMID from ROOM
+</select>
+
+<!-- CreateRoom 방만들기 처음에 insert -->
+<insert id="CreateRoom" parameterType="room">
+insert into ROOM(roomId,RStart,REnd,PreTime,PreDistance,PreMoney,Rid1) values(#{roomId},#{rStart},#{rEnd},#{preTime},#{preDistance},#{preMoney},#{rId1})
+</insert>
+
+<!-- RoomList
+<select id="RoomList" parameterType="int" resultType="room">
+SELECT * FROM ROOM WHERE Roomid=#{insertRoomId}
+</select> -->
+
+<!-- CreateRoom 방 옵션, 최대인원 추가 -->
+<update id="CreateRealRoom" parameterType="member">
+update room set OPGENDER=#{opGender},MAXIMUM=#{maximum} where ROOMID = #{roomId}
+</update>
+
+<!-- 예상금액 따로 넣어주기 -->
+<update id="CreateRealRoom2" parameterType="member">
+update room set OPGENDER=#{opGender},MAXIMUM=#{maximum},FinalMoney=#{finalMoney} where ROOMID = #{roomId}
+</update>
+
+<!-- SelectRoom -->
+<select id="SelectRoom" parameterType="room" resultType="room">
+select * from room where roomId=#{roomId}
+</select>
+
+<!-- ReservationRoom -->
+<update id="ReservationRoom" parameterType="member">
+update room set OPGENDER=#{opGender},MAXIMUM=#{maximum},DAYDAY=#{dayDay},TIMES=#{times} where ROOMID = #{roomId}
+</update>
+
+<!--RoomList  -->
+<select id="RoomList" parameterType="room" resultType="room">
+select * from room where DAYDAY is null ORDER BY ROOMID
+</select>
+
+<!--RoomList2  -->
+<select id="RoomList2" parameterType="room" resultType="room">
+select * from room where DAYDAY is not null ORDER BY ROOMID
+</select>
+
+<!-- Id1 -->
+<select id="Id1" parameterType="room" resultType="String">
+SELECT rId1 FROM ROOM WHERE ROOMID = #{roomId}
+</select>
+
+<!-- UpdateId1 -->
+<update id="UpdateId1" parameterType="room">
+UPDATE ROOM SET RID1=#{rId1} WHERE roomId = #{roomId}
+</update>
+
+<!--RoomInfo  -->
+<select id="RoomInfo" parameterType="room" resultType="room">
+SELECT * FROM ROOM WHERE ROOMID = #{roomId}
+</select>
+
+<!-- Id2 -->
+<select id="Id2" parameterType="room" resultType="String">
+SELECT rId2 FROM ROOM WHERE ROOMID = #{roomId}
+</select>
+
+<!-- UpdateId2 -->
+<update id="UpdateId2" parameterType="room">
+UPDATE ROOM SET RID2=#{rId2} WHERE roomId = #{roomId}
+</update>
+
+<!-- Id3 -->
+<select id="Id3" parameterType="room" resultType="String">
+SELECT rId3 FROM ROOM WHERE ROOMID = #{roomId}
+</select>
+
+<!-- UpdateId3 -->
+<update id="UpdateId3" parameterType="room">
+UPDATE ROOM SET RID3=#{rId3} WHERE roomId = #{roomId}
+</update>
+
+<!-- Id4 -->
+<select id="Id4" parameterType="room" resultType="String">
+SELECT rId4 FROM ROOM WHERE ROOMID = #{roomId}
+</select>
+
+<!-- UpdateId4 -->
+<update id="UpdateId4" parameterType="room">
+UPDATE ROOM SET RID4=#{rId4} WHERE roomId = #{roomId}
+</update>
+
+<!-- SelectMax -->
+<select id="SelectMax" parameterType="room" resultType="String">
+SELECT maximum FROM ROOM WHERE ROOMID = #{roomId}
+</select>
+
+<!-- SelectOut -->
+<select id="SelectOut" parameterType="room" resultType="room">
+SELECT * FROM ROOM WHERE ROOMID = #{roomId}
+</select>
+
+<!-- RoomDel -->
+<delete id="RoomDel" parameterType="room">
+DELETE FROM ROOM WHERE ROOMID= #{roomId}
+</delete>
+
+<!-- RoomOutRid2 -->
+<update id="RoomOutRid2" parameterType="room">
+UPDATE ROOM SET RID2=null WHERE roomId = #{roomId}
+</update>
+
+<!-- RoomOutRid3 -->
+<update id="RoomOutRid3" parameterType="room">
+UPDATE ROOM SET RID3=null WHERE roomId = #{roomId}
+</update>
+
+<!-- RoomOutRid4 -->
+<update id="RoomOutRid4" parameterType="room">
+UPDATE ROOM SET RID4=null WHERE roomId = #{roomId}
+</update>
+
+<!-- MemberGender -->
+<select id="MemberGender" parameterType="member" resultType="member">
+select * from member where ID=#{Id}
+</select>
+
+<!-- RoomGender -->
+<select id="RoomGender" parameterType="room" resultType="room">
+SELECT * FROM ROOM WHERE ROOMID = #{roomId}
+</select>
+
+<!-- SelectDriverId -->
+<select id="SelectDriverId" parameterType="room" resultType="String">
+SELECT DRIVERID FROM ROOM WHERE ROOMID = #{roomId}
+</select>
+
+<!-- UpdateDriver -->
+<update id="UpdateDriver" parameterType="room">
+UPDATE ROOM SET driverId=#{driverId} WHERE roomId = #{roomId}
+</update>
+
+<!-- RoomOutDriver -->
+<update id="RoomOutDriver" parameterType="room">
+UPDATE ROOM SET driverId=null WHERE roomId = #{roomId}
+</update>
+
+<!--DriverInfo  -->
+<select id="DriverInfo" parameterType="member" resultType="member">
+SELECT * FROM MEMBER WHERE ID = #{Id}
+</select>
+
+<!-- UserPoint 유저 포인트찾기 PAY 클래스-->
+<select id="UserPoint" parameterType="member" resultType="member">
+SELECT * FROM MEMBER WHERE ID = #{Id}
+</select>
+
+<!-- UpdatePoint -->
+<update id="UpdatePoint" parameterType="member">
+UPDATE MEMBER SET POINT=#{Point} WHERE ID = #{Id}
+</update>
+
+<!-- PayAfterRoom -->
+<select id="PayAfterRoom" parameterType="room" resultType="room">
+SELECT * FROM ROOM WHERE ROOMID = #{roomId}
+</select>
+
+<!-- InsertId -->
+<insert id="InsertId" parameterType="pay">
+insert into pay values(#{roomId},#{id},1)
+</insert>
+
+<!-- MemberPointUpdate -->
+<update id="MemberPointUpdate" parameterType="member">
+UPDATE MEMBER SET POINT=#{Point} WHERE ID = #{Id}
+</update>
+
+<!-- SelectPayTable -->
+<select id="SelectPayTable" parameterType="pay" resultType="pay">
+SELECT * FROM PAY WHERE ROOMID = #{roomId} and id = #{id}
+</select>
+
+<!-- DelLine -->
+<delete id="DelLine" parameterType="room">
+DELETE FROM PAY WHERE ROOMID= #{roomId} AND ID = #{id}
+</delete>
+
+<!-- FinalMoneyBring -->
+<select id="FinalMoneyBring" parameterType="room" resultType="room">
+SELECT * FROM ROOM WHERE ROOMID = #{roomId}
+</select>
+
+<!-- SelectOkChash -->
+<select id="SelectOkChash" parameterType="pay" resultType="String">
+SELECT OKCASH FROM PAY WHERE ROOMID = #{roomId} and id = #{id}
+</select>
+
+<!-- PayList -->
+<select id="PayList" parameterType="pay" resultType="pay">
+select * from pay where roomId = #{roomId}
+</select>
+
+<!-- InsertDrvierPay -->
+<insert id="InsertDrvierPay" parameterType="pay">
+insert into pay values(#{roomId},#{id},2)
+</insert>
+
+<!-- EndRoomInsert -->
+<insert id="EndRoomInsert" parameterType="endRoom">
+insert into ENDROOM values(#{eroomId},#{erStart},#{erEnd},#{epreTime},#{epreDistance},#{epreMoney},#{eopGender},#{erId1},#{erId2},#{erId3},#{erId4},#{edayDay},#{etimes},#{emaximum},#{edriverId},#{efinalMoney})
+</insert>
+
+<!-- EndRoomId (max)ERoomId -->
+<select id="EndRoomId" resultType="String">
+select max(EROOMID) AS ROOMID from ENDROOM
+</select>
+
+<!--PayList2  -->
+<select id="PayList2" parameterType="room" resultType="String">
+select ROOMID from pay where id=#{id}
+</select>
+
+<!--  rservationRoomList   -->
+<select id="rservationRoomList" parameterType="room" resultType="room">
+select * from room where ROOMID=#{roomId} AND DAYDAY is not null
+</select>
+
+<!--endroomid  -->
+<select id="endroomid" parameterType="String" resultType="room"> 
+select * from room where rId1=#{id} or rId2=#{id} or rId3=#{id} or rId4=#{id}
+</select>
+
+<!-- PayRoomId -->
+<select id="PayRoomId" parameterType="room" resultType="String">
+select ROOMID from pay where id=#{id}
+</select>
+
+<!-- EndRoomSelect -->
+<select id="EndRoomSelect" parameterType="endRoom" resultType="endRoom">
+select * from ENDROOM where EROOMID=#{eRoomid}
+</select>
+
+<!--EndrId  -->
+<select id="EndrId" parameterType="String" resultType="endRoom">
+select * from ENDROOM where erId1=#{id} or erId2=#{id} or erId3=#{id} or erId4=#{id}
+</select>
+
+<!--SelectDriverInfo  -->
+<select id="SelectDriverInfo" parameterType="member" resultType="member">
+select * from member where ID=#{Id}
+</select>
+
+<!-- UpdateDriverInfo -->
+<update id="UpdateDriverInfo" parameterType="member">
+update member set grade=#{Grade},gradeCount=#{GradeCount},finalgrade=#{Finalgrade} where ID = #{Id}
+</update>
+
+<!--DriverExpected  -->
+<select id="DriverExpected" parameterType="room" resultType="room">
+select * from room where driverId=#{driverId}
+</select>
+
+<!--drivingrecord  -->
+<select id="drivingrecord" parameterType="endRoom" resultType="endRoom">
+select * from ENDROOM where edriverId=#{edriverId}
+</select>
+
+</mapper>

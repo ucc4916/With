@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//En" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<!-- mybatis-config.xml -->
+
+<configuration>
+<typeAliases>
+<typeAlias alias="member" type="com.with.project.vo.MemberVO"/>
+<typeAlias alias="room" type="com.with.project.vo.RoomVO"/>
+<typeAlias alias="pay" type="com.with.project.vo.PayVO"/>
+<typeAlias alias="endRoom" type="com.with.project.vo.endRoomVO"/>
+<typeAlias alias="TGrade" type="com.with.project.vo.TGradeVO"/>
+</typeAliases>
+</configuration>
+
